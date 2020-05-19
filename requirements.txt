@@ -1,0 +1,4 @@
+Django==3.0.6
+djangorestframework==3.8.2
+psycopg2==2.7.7
+black==19.10b0

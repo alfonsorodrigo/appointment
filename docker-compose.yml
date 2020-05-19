@@ -1,0 +1,26 @@
+version: "3"
+services:
+  appointment_app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./appointment_app:/appointment_app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=appointment_app
+      - DB_USER=postgres
+      - DB_PASS=supersecretpassword
+    depends_on:
+      - db
+  db:
+    image: postgres:10-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=appointment_app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=supersecretpassword
