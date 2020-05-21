@@ -6,6 +6,9 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.conf import settings
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.core.mail import BadHeaderError, send_mail
 
 
 def get_hour_appointment(date):
@@ -107,3 +110,18 @@ class Appointment(AuditTrail):
 
     def __str__(self):
         return self.user.email
+
+
+@receiver(post_save, sender=Appointment)
+def send_user_email(sender, instance, **kwargs):
+    if kwargs.get("created", False):
+        subject = "Gracias por agendqar su cita con Yema"
+        pediatrician = instance.appointment_scheduling.pediatrician.name
+        appointment = f"{get_date_appointment(instance.appointment_scheduling.time_start)}  de {get_hour_appointment(instance.appointment_scheduling.time_start)} a {get_hour_appointment(instance.appointment_scheduling.time_finish)}"
+        message = f"Su pediatra es: {pediatrician}\n\nFecha de cita: {appointment}\n\nComentarios: {instance.comments}"
+        from_email = "yemaecommerce@gmail.com"
+        user_email = instance.user.email
+        try:
+            send_mail(subject, message, from_email, [user_email])
+        except BadHeaderError:
+            pass
