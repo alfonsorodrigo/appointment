@@ -57,7 +57,12 @@ class PediatricianSerializer(serializers.ModelSerializer):
 class AppointmentSchedulingSerializer(serializers.ModelSerializer):
     """Serialize AppointmentScheduling"""
 
-    pediatrician = PediatricianSerializer()
+    pediatrician_data = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_pediatrician_data(obj):
+        serializers = PediatricianSerializer(obj.pediatrician)
+        return serializers.data
 
     class Meta:
         model = AppointmentScheduling
@@ -67,6 +72,7 @@ class AppointmentSchedulingSerializer(serializers.ModelSerializer):
             "time_start",
             "time_finish",
             "is_available",
+            "pediatrician_data",
         )
         read_only_fields = ("id",)
 
