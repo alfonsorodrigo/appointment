@@ -80,7 +80,12 @@ class AppointmentSchedulingSerializer(serializers.ModelSerializer):
 class AppointmentSerializer(serializers.ModelSerializer):
     """Serialize Appointment"""
 
-    appointment_scheduling = AppointmentSchedulingSerializer()
+    appointment_scheduling_data = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_appointment_scheduling_data(obj):
+        serializers = AppointmentSchedulingSerializer(obj.appointment_scheduling)
+        return serializers.data
 
     class Meta:
         model = Appointment
@@ -89,5 +94,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
             "user",
             "appointment_scheduling",
             "comments",
+            "appointment_scheduling_data",
         )
         read_only_fields = ("id",)
