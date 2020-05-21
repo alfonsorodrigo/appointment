@@ -46,6 +46,10 @@ class AppointmentSchedulingViewSet(ModelViewSet):
     queryset = AppointmentScheduling.objects.all()
     serializer_class = AppointmentSchedulingSerializer
 
+    def get_queryset(self):
+        """Return Appointment Scheduling only available"""
+        return self.queryset.filter(is_available=True).order_by("-id")
+
 
 class AppointmentViewSet(ModelViewSet):
     """Manage Appointment in the database"""
@@ -56,3 +60,14 @@ class AppointmentViewSet(ModelViewSet):
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
         return self.queryset.filter(user=self.request.user).order_by("-id")
+
+    def perform_create(self, serializer):
+        """Create a new Appointment"""
+        serializer_data = self.get_serializer(data=self.request.data)
+        serializer_data.is_valid()
+        appointment_scheduling = serializer_data.validated_data[
+            "appointment_scheduling"
+        ]
+        appointment_scheduling.is_available = False
+        appointment_scheduling.save()
+        serializer.save()

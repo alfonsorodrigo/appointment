@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from core.models import AppointmentScheduling, Appointment, Pediatrician
+from rest_framework.exceptions import ValidationError
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -9,7 +10,7 @@ class UserSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("email", "password", "name")
+        fields = ("id", "email", "password", "name")
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
     def create(self, validate_data):
@@ -86,6 +87,15 @@ class AppointmentSerializer(serializers.ModelSerializer):
     def get_appointment_scheduling_data(obj):
         serializers = AppointmentSchedulingSerializer(obj.appointment_scheduling)
         return serializers.data
+
+    def validate(self, data):
+        if data.get("appointment_scheduling"):
+            appointment_scheduling = data.get("appointment_scheduling")
+            search = AppointmentScheduling.objects.get(pk=appointment_scheduling.id)
+            if not search.is_available:
+                msg = "not available"
+                raise ValidationError(msg)
+        return data
 
     class Meta:
         model = Appointment
