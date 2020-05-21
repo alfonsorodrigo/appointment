@@ -16,6 +16,17 @@ class ModelViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    """Manage the authenticated user"""
+
+    serializer_class = UserSerializers
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
+
+
 class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
 

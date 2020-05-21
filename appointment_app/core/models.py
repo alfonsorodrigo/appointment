@@ -115,7 +115,7 @@ class Appointment(AuditTrail):
 @receiver(post_save, sender=Appointment)
 def send_user_email(sender, instance, **kwargs):
     if kwargs.get("created", False):
-        subject = "Gracias por agendqar su cita con Yema"
+        subject = "Gracias por agendar su cita con Yema"
         pediatrician = instance.appointment_scheduling.pediatrician.name
         appointment = f"{get_date_appointment(instance.appointment_scheduling.time_start)}  de {get_hour_appointment(instance.appointment_scheduling.time_start)} a {get_hour_appointment(instance.appointment_scheduling.time_finish)}"
         message = f"Su pediatra es: {pediatrician}\n\nFecha de cita: {appointment}\n\nComentarios: {instance.comments}"
