@@ -25,7 +25,7 @@ docker-compose build
 To run your tests, execute:
 
 ```sh
-docker-compose run app sh -c "python manage.py test"
+docker-compose run appointment_app sh -c "python manage.py test"
 ```
 
 ### Run
